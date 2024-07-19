@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  lint:
+    build: .
+    command: pylint /talana-kombat/main.py
+
+  tests:
+    build: .
+    command: python3 -m unittest discover -s /talana-kombat/tests
+    volumes:
+      - ./src/tests:/talana-kombat/tests
+      - ./src/tests/data:/talana-kombat/tests/data
+
+  main:
+    build: .
+    command: python3 /talana-kombat/main.py
