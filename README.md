@@ -6,11 +6,17 @@ La verdad es bastante entretenido el desafío 😅 y espero estar a la altura de
 
 ## Ejecución
 
-Para ejecutar el programa es fácil, solo debes asegurarte de que el archivo `/src/input.json` tenga los inputs correctos que deseas probar, y luego usar:
+Para ejecutar el programa es fácil, solo debes usar:
 
 `docker-compose up --build`
 
-Al usar el comando, se correrán 3 componentes, uno para validar el linter, otro para validar los tests predefinidos, y el último para validar el input que se quiere probar.
+Al usar el comando, se correrán 3 componentes, uno para validar el linter, otro para validar los tests predefinidos, y el último para levantar una api en FastAPI.
+
+Para acceder a la api, solo debes entrar desde un navegador a:
+
+<http://localhost:8000/docs>
+
+Donde deberás insertar la data del archivo JSON que prefieras.
 
 ## Ejecución de tests
 

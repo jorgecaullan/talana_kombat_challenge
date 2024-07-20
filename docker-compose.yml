@@ -5,13 +5,20 @@ services:
     build: .
     command: pylint /talana-kombat/main.py
 
+  main:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/talana-kombat
+
   tests:
     build: .
     command: python3 -m unittest discover -s /talana-kombat/tests
     volumes:
       - ./src/tests:/talana-kombat/tests
       - ./src/tests/data:/talana-kombat/tests/data
-
-  main:
-    build: .
-    command: python3 /talana-kombat/main.py
+      - ./src:/talana-kombat
+    depends_on:
+      - main
