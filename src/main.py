@@ -1,64 +1,92 @@
 """Main file to run challenge of talana kombat"""
 
+import re
 import logging
+from itertools import groupby
 from fastapi import FastAPI, HTTPException
 from models import MoveRequest, MoveResponse
 
 logging.basicConfig(level=logging.INFO)
 
 class TalanaKombat():
-    """ Class with all required  """
+    """ Class used to analice a match """
     def __init__(self):
         self.p1_energy = 6
         self.p2_energy = 6
 
-    def get_hit(self, player, movement_inputs, hit):
-        """ Return damage and name of used movement """
+    def get_hit_description(self, player, movement_inputs, hit):
+        """ Return damage, name of used movement and if exist some previous movement inputs """
         combinations = {
             "Tonyn": {
-                "P": { "DSD": { "damage": 3, "name": "un Taladoken" } },
-                "K": { "SD": { "damage": 2, "name": "un Remuyuken" } },
+                "P": { "DSD": { "damage": 3, "name": "conecta un Taladoken" } },
+                "K": { "SD": { "damage": 2, "name": "conecta un Remuyuken" } },
             },
             "Arnaldor": {
-                "K": { "SA": { "damage": 3, "name": "un Remuyuken" } },
-                "P": { "ASA": { "damage": 2, "name": "un Taladoken" } },
+                "K": { "SA": { "damage": 3, "name": "conecta un Remuyuken" } },
+                "P": { "ASA": { "damage": 2, "name": "conecta un Taladoken" } },
             }
         }
 
+        # validate combinations of player
         if (player in combinations
             and hit in combinations[player]):
             if movement_inputs[-3:] in combinations[player][hit]:
                 result = combinations[player][hit][movement_inputs[-3:]]
                 result["previous_movements"] = movement_inputs[:-3]
                 return result
-            elif movement_inputs[-2:] in combinations[player][hit]:
+            if movement_inputs[-2:] in combinations[player][hit]:
                 result = combinations[player][hit][movement_inputs[-2:]]
                 result["previous_movements"] = movement_inputs[:-2]
                 return result
-        elif hit == "P":
-            return {"damage": 1, "name": "un puñetazo", "previous_movements": movement_inputs}
-        elif hit == "K":
-            return {"damage": 1, "name": "una patada", "previous_movements": movement_inputs}
-        else:
-            return {"damage": 0, "name": "", "previous_movements": movement_inputs}
 
-    def get_movement_description(self, player, movement_inputs, hit) -> str:
+        # set damage on case of not match combinations
+        if hit == "P":
+            return {"damage": 1, "name": "da un puñetazo", "previous_movements": movement_inputs}
+        if hit == "K":
+            return {"damage": 1, "name": "da una patada", "previous_movements": movement_inputs}
+
+        return {"damage": 0, "name": "no golpea", "previous_movements": movement_inputs}
+
+    def get_movement_description(self, player, movement_inputs) -> str:
         """ Check if arguments should be a special movement_inputs or just movement """
-        response = f"{player}, {movement_inputs}, {hit}"
+        descriptions = {
+            "default": {
+                "": "se queda inmóvil",
+                "W": "salta",
+                "S": "se agacha",
+            },
+            "Tonyn": {
+                "A": "retrocede",
+                "D": "avanza",
+            }
+        }
+
+        # upcase inputs, remove characters different than WASD
+        movement_inputs = re.sub(r'[^WASD]', '', movement_inputs.upper())
+        # remove consecutive characters
+        movement_inputs = ''.join(key for key, _ in groupby(movement_inputs))
+        if movement_inputs in descriptions["default"]:
+            movement_description = descriptions["default"][movement_inputs]
+        elif player in descriptions and movement_inputs in descriptions[player]:
+            movement_description = descriptions[player][movement_inputs]
+        else:
+            movement_description = "se mueve"
+
+        response = f"{player} {movement_description}"
         return response
 
 app = FastAPI()
 
-@app.post("/start", response_model=MoveResponse, tags=["Talana Kombat"])
+@app.post("/start", response_model=MoveResponse, tags=["Talana Kombat by Jorge Caullán"])
 def start_fight(move_request: MoveRequest) -> MoveResponse:
     """ Start a fight of a json file, show fight details and return winner """
 
-    game = TalanaKombat()
+    # game = TalanaKombat()
     try:
         movements_result = ""
         for player, details in move_request.dict().items():
             for movimiento, golpe in zip(details['movimientos'], details['golpes']):
-                movements_result += game.get_movement_description(player, movimiento, golpe) + "\n"
+                movements_result += f"{player}, {movimiento}, {golpe}\n"
         return MoveResponse(
             details=movements_result,
             winner='You win',
