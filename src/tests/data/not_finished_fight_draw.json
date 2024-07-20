@@ -6,20 +6,21 @@
           "WA"
       ],
       "golpes": [
-          1,
-          2
+          "P",
+          "K",
+          ""
       ]
   },
   "player2": {
       "movimientos": [
           "SA",
           "",
-          "SA"
+          ""
       ],
       "golpes": [
           "K",
-          3,
-          "K"
+          "P",
+          "P"
       ]
   }
 }

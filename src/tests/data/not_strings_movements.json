@@ -1,0 +1,26 @@
+{
+  "player1": {
+      "movimientos": [
+          "DSD",
+          "SD",
+          12
+      ],
+      "golpes": [
+          "P",
+          "K",
+          ""
+      ]
+  },
+  "player2": {
+      "movimientos": [
+          "SA",
+          123,
+          "SA"
+      ],
+      "golpes": [
+          "K",
+          "",
+          "K"
+      ]
+  }
+}
