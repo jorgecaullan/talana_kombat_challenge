@@ -12,33 +12,33 @@ class TestMovementInputs(unittest.TestCase):
         """ Test player 1 movements previous to use a hit """
 
         self.assertEqual(self.game.get_movement_description('Tonyn', ""),
-                         "Tonyn se queda inmóvil")
+                         "se queda inmóvil")
         self.assertEqual(self.game.get_movement_description('Tonyn', "W"),
-                         "Tonyn salta")
+                         "salta")
         self.assertEqual(self.game.get_movement_description('Tonyn', "A"),
-                         "Tonyn retrocede")
+                         "retrocede")
         self.assertEqual(self.game.get_movement_description('Tonyn', "S"),
-                         "Tonyn se agacha")
+                         "se agacha")
         self.assertEqual(self.game.get_movement_description('Tonyn', "D"),
-                         "Tonyn avanza")
+                         "avanza")
 
         # jumps
-        self.assertEqual(self.game.get_movement_description('Tonyn', "WS"),
-                         "Tonyn salta hacia adelante")
-        self.assertEqual(self.game.get_movement_description('Tonyn', "SW"),
-                         "Tonyn salta hacia adelante")
+        self.assertEqual(self.game.get_movement_description('Tonyn', "WD"),
+                         "salta hacia adelante")
+        self.assertEqual(self.game.get_movement_description('Tonyn', "DW"),
+                         "salta hacia adelante")
         self.assertEqual(self.game.get_movement_description('Tonyn', "WA"),
-                         "Tonyn salta hacia atrás")
+                         "salta hacia atrás")
         self.assertEqual(self.game.get_movement_description('Tonyn', "AW"),
-                         "Tonyn salta hacia atrás")
+                         "salta hacia atrás")
 
         # any other combination should return "Tonyn se mueve"
         self.assertEqual(self.game.get_movement_description('Tonyn', "ASD"),
-                         "Tonyn se mueve")
+                         "se mueve")
         self.assertEqual(self.game.get_movement_description('Tonyn', "DSA"),
-                         "Tonyn se mueve")
+                         "se mueve")
         self.assertEqual(self.game.get_movement_description('Tonyn', "WASD"),
-                         "Tonyn se mueve")
+                         "se mueve")
 
     def test_player_1_hits(self):
         """ Test player 1 hits """
@@ -74,33 +74,33 @@ class TestMovementInputs(unittest.TestCase):
         """ Test player 2 movements previous to use a hit """
 
         self.assertEqual(self.game.get_movement_description('Arnaldor', ""),
-                         "Arnaldor se queda inmóvil")
+                         "se queda inmóvil")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "W"),
-                         "Arnaldor salta")
+                         "salta")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "A"),
-                         "Arnaldor avanza")
+                         "avanza")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "S"),
-                         "Arnaldor se agacha")
+                         "se agacha")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "D"),
-                         "Arnaldor retrocede")
+                         "retrocede")
 
         # jumps
-        self.assertEqual(self.game.get_movement_description('Arnaldor', "WS"),
-                         "Arnaldor salta hacia atrás")
-        self.assertEqual(self.game.get_movement_description('Arnaldor', "SW"),
-                         "Arnaldor salta hacia atrás")
+        self.assertEqual(self.game.get_movement_description('Arnaldor', "WD"),
+                         "salta hacia atrás")
+        self.assertEqual(self.game.get_movement_description('Arnaldor', "DW"),
+                         "salta hacia atrás")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "WA"),
-                         "Arnaldor salta hacia adelante")
+                         "salta hacia adelante")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "AW"),
-                         "Arnaldor salta hacia adelante")
+                         "salta hacia adelante")
 
         # any other combination should return "Arnaldor se mueve"
         self.assertEqual(self.game.get_movement_description('Arnaldor', "ASD"),
-                         "Arnaldor se mueve")
+                         "se mueve")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "DSA"),
-                         "Arnaldor se mueve")
+                         "se mueve")
         self.assertEqual(self.game.get_movement_description('Arnaldor', "WASD"),
-                         "Arnaldor se mueve")
+                         "se mueve")
 
     def test_player_2_hits(self):
         """ Test player 2 hits """
@@ -131,6 +131,55 @@ class TestMovementInputs(unittest.TestCase):
                          "da un puñetazo")
         self.assertEqual(self.game.get_hit_description('Arnaldor', "WADS", "K")["name"],
                          "da una patada")
+
+    def test_turn_description(self):
+        """ Test different turns full descriptions """
+        # only movements
+        self.assertEqual(self.game.get_turn_description("Tonyn", "AAA", ""),
+                         "Tonyn retrocede")
+        self.assertEqual(self.game.get_turn_description("Tonyn", "ASDAS", ""),
+                         "Tonyn se mueve")
+
+        # only hits
+        self.assertEqual(self.game.get_turn_description("Tonyn", "", "K"),
+                         "Tonyn da una patada")
+        self.assertEqual(self.game.get_turn_description("Tonyn", "DSD", "P"),
+                         "Tonyn conecta un Taladoken")
+
+        # movements with hits
+        self.assertEqual(self.game.get_turn_description("Tonyn", "DD", "P"),
+                         "Tonyn avanza y da un puñetazo")
+        self.assertEqual(self.game.get_turn_description("Tonyn", "WDDSD", "P"),
+                         "Tonyn salta hacia adelante y conecta un Taladoken")
+
+        # no movements and no hits
+        self.assertEqual(self.game.get_turn_description("Tonyn", "", ""),
+                         "Tonyn se queda inmóvil")
+
+    def test_set_first_player(self):
+        """ Test who player should start """
+
+        # p1 same buttons and hits
+        self.assertEqual(self.game.set_first_player("ASD", "P", "ASD", "P"),
+                         "player1")
+        # p1 less buttons
+        self.assertEqual(self.game.set_first_player("AS", "P", "ASD", "K"),
+                         "player1")
+        self.assertEqual(self.game.set_first_player("ASD", "", "ASD", "P"),
+                         "player1")
+        # p1 same buttons, but less hits
+        self.assertEqual(self.game.set_first_player("AS", "", "A", "K"),
+                         "player1")
+
+        # p2 less buttons
+        self.assertEqual(self.game.set_first_player("ASD", "P", "AS", "P"),
+                         "player2")
+        self.assertEqual(self.game.set_first_player("ASD", "P", "ASD", ""),
+                         "player2")
+        # p2 same buttons, but less hits
+        self.assertEqual(self.game.set_first_player("A", "P", "AP", ""),
+                         "player2")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,6 +14,21 @@ class TalanaKombat():
         self.p1_energy = 6
         self.p2_energy = 6
         self.full_description = ""
+        self.first_player = "player1"
+
+    def set_first_player(self, p1_movements, p1_hit, p2_movements, p2_hit):
+        """ Get player that should move first """
+        p1_buttons = len(p1_movements) + len(p1_hit)
+        p2_buttons = len(p2_movements) + len(p2_hit)
+
+        if (p1_buttons > p2_buttons
+            or (p1_buttons == p2_buttons and len(p1_hit) > len(p2_hit))):
+            self.first_player = "player2"
+            return "player2"
+
+        return "player1"
+
+
 
     def get_hit_description(self, player, movement_inputs, hit) -> dict:
         """ Return damage, name of used movement and if exist some previous movement inputs """
@@ -59,11 +74,20 @@ class TalanaKombat():
             "Tonyn": {
                 "A": "retrocede",
                 "D": "avanza",
+                "WA": "salta hacia atrás",
+                "AW": "salta hacia atrás",
+                "WD": "salta hacia adelante",
+                "DW": "salta hacia adelante",
+            },
+            "Arnaldor": {
+                "D": "retrocede",
+                "A": "avanza",
+                "WD": "salta hacia atrás",
+                "DW": "salta hacia atrás",
+                "WA": "salta hacia adelante",
+                "AW": "salta hacia adelante",
             }
         }
-
-        # upcase inputs, remove characters different than WASD
-        movement_inputs = re.sub(r'[^WASD]', '', movement_inputs.upper())
         # remove consecutive characters
         movement_inputs = ''.join(key for key, _ in groupby(movement_inputs))
         if movement_inputs in descriptions["default"]:
@@ -73,8 +97,7 @@ class TalanaKombat():
         else:
             movement_description = "se mueve"
 
-        response = f"{player} {movement_description}"
-        return response
+        return movement_description
 
     def get_turn_description(self, player, movement_inputs, hit) -> str:
         """ Show full description of a player turn """
@@ -94,7 +117,9 @@ def start_fight(move_request: MoveRequest) -> MoveResponse:
 
     # game = TalanaKombat()
     try:
-        movements_result = ""
+        # # upcase inputs and remove characters different than WASD
+        # movement_inputs = re.sub(r'[^WASD]', '', movement_inputs.upper())
+
         for player, details in move_request.dict().items():
             for movimiento, golpe in zip(details['movimientos'], details['golpes']):
                 movements_result += f"{player}, {movimiento}, {golpe}\n"
