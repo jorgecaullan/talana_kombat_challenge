@@ -1,6 +1,6 @@
 """ Main file that run unit tests validating multiple combination moves of any player """
 import unittest
-from main import TalanaKombat
+from talana_kombat import TalanaKombat
 
 class TestMovementInputs(unittest.TestCase):
     """ Class that tests players movements """
@@ -136,25 +136,25 @@ class TestMovementInputs(unittest.TestCase):
         """ Test different turns full descriptions """
         # only movements
         self.assertEqual(self.game.get_turn_description("Tonyn", "AAA", ""),
-                         "Tonyn retrocede")
+                         "Tonyn retrocede\n")
         self.assertEqual(self.game.get_turn_description("Tonyn", "ASDAS", ""),
-                         "Tonyn se mueve")
+                         "Tonyn se mueve\n")
 
         # only hits
         self.assertEqual(self.game.get_turn_description("Tonyn", "", "K"),
-                         "Tonyn da una patada")
+                         "Tonyn da una patada\n")
         self.assertEqual(self.game.get_turn_description("Tonyn", "DSD", "P"),
-                         "Tonyn conecta un Taladoken")
+                         "Tonyn conecta un Taladoken\n")
 
         # movements with hits
         self.assertEqual(self.game.get_turn_description("Tonyn", "DD", "P"),
-                         "Tonyn avanza y da un puñetazo")
+                         "Tonyn avanza y da un puñetazo\n")
         self.assertEqual(self.game.get_turn_description("Tonyn", "WDDSD", "P"),
-                         "Tonyn salta hacia adelante y conecta un Taladoken")
+                         "Tonyn salta hacia adelante y conecta un Taladoken\n")
 
         # no movements and no hits
         self.assertEqual(self.game.get_turn_description("Tonyn", "", ""),
-                         "Tonyn se queda inmóvil")
+                         "Tonyn se queda inmóvil\n")
 
     def test_set_first_player(self):
         """ Test who player should start """
