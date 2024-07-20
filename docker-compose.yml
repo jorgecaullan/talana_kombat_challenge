@@ -3,7 +3,9 @@ version: '3.8'
 services:
   lint:
     build: .
-    command: pylint /talana-kombat/main.py
+    command: sh -c "PYTHONPATH=/talana_kombat pylint /talana_kombat"
+    volumes:
+      - ./src:/talana_kombat
 
   main:
     build: .
@@ -11,14 +13,14 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./src:/talana-kombat
+      - ./src:/talana_kombat
 
   tests:
     build: .
-    command: python3 -m unittest discover -s /talana-kombat/tests -f
+    command: python3 -m unittest discover -s /talana_kombat/tests -f
     volumes:
-      - ./src/tests:/talana-kombat/tests
-      - ./src/tests/data:/talana-kombat/tests/data
-      - ./src:/talana-kombat
+      - ./src/tests:/talana_kombat/tests
+      - ./src/tests/data:/talana_kombat/tests/data
+      - ./src:/talana_kombat
     depends_on:
       - main
