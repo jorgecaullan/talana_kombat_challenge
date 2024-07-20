@@ -13,8 +13,9 @@ class TalanaKombat():
     def __init__(self):
         self.p1_energy = 6
         self.p2_energy = 6
+        self.full_description = ""
 
-    def get_hit_description(self, player, movement_inputs, hit):
+    def get_hit_description(self, player, movement_inputs, hit) -> dict:
         """ Return damage, name of used movement and if exist some previous movement inputs """
         combinations = {
             "Tonyn": {
@@ -45,7 +46,7 @@ class TalanaKombat():
         if hit == "K":
             return {"damage": 1, "name": "da una patada", "previous_movements": movement_inputs}
 
-        return {"damage": 0, "name": "no golpea", "previous_movements": movement_inputs}
+        return {"damage": 0, "name": "", "previous_movements": movement_inputs}
 
     def get_movement_description(self, player, movement_inputs) -> str:
         """ Check if arguments should be a special movement_inputs or just movement """
@@ -75,6 +76,16 @@ class TalanaKombat():
         response = f"{player} {movement_description}"
         return response
 
+    def get_turn_description(self, player, movement_inputs, hit) -> str:
+        """ Show full description of a player turn """
+        hit_description = self.get_hit_description(player, movement_inputs, hit)
+        movement_description = self.get_movement_description(player,
+                                                             hit_description["previous_movements"])
+
+        # TODO: "se queda inmóvil" solo aparece si NO se da un hit
+        # TODO: no se muestra hit_description si no hay daño
+        return f"{player} {movement_description} y {hit_description['name']}"
+
 app = FastAPI()
 
 @app.post("/start", response_model=MoveResponse, tags=["Talana Kombat by Jorge Caullán"])
@@ -90,7 +101,7 @@ def start_fight(move_request: MoveRequest) -> MoveResponse:
         return MoveResponse(
             details=movements_result,
             winner='You win',
-            warnings=['No warnings'],
+            warnings=[],
         )
     except Exception as e:
         logging.error("Error processing request: %s", e)
