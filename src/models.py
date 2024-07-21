@@ -14,6 +14,5 @@ class MoveRequest(BaseModel):
 
 class MoveResponse(BaseModel):
     """ Standard response from start of a kombat """
-    details: str
+    detail: str
     winner: str
-    warnings: List[str]

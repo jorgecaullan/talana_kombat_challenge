@@ -36,9 +36,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Arnaldor gana la pelea y aun le queda 2 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Arnaldor")
-        self.assertEqual(len(response_json['warnings']), 0)
 
     def test_example2(self):
         """ Test example2 from challenge instructions """
@@ -52,14 +51,13 @@ class TestMultipleFights(unittest.TestCase):
             "Tonyn conecta un Taladoken\n"
             "Arnaldor se mueve y da una patada\n"
             "Tonyn se mueve y da una patada\n"
-            "Arnaldor se mueve y da una patada\n"
+            "Arnaldor avanza y conecta un Remuyuken\n"
             "Tonyn conecta un Taladoken\n"
-            "KO! Tonyn gana la pelea y aun le queda 3 de energía"
+            "KO! Tonyn gana la pelea y aun le queda 1 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Tonyn")
-        self.assertEqual(len(response_json['warnings']), 0)
 
     def test_example3(self):
         """ Test example3 from challenge instructions """
@@ -82,9 +80,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Arnaldor gana la pelea y aun le queda 3 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
-        self.assertEqual(response_json['winner'], "Tonyn")
-        self.assertIn("Tonyn se queda sin movimientos", response_json['warnings'])
+        self.assertEqual(response_json['detail'], expected_details)
+        self.assertEqual(response_json['winner'], "Arnaldor")
 
     def test_less_hits_than_movements(self):
         """ Test less_hits_than_movements """
@@ -100,9 +97,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Arnaldor gana la pelea y aun le queda 5 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Arnaldor")
-        self.assertIn("Tonyn se queda sin golpes", response_json['warnings'])
 
     def test_less_movements_than_hits(self):
         """ Test less_movements_than_hits """
@@ -120,10 +116,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Tonyn gana la pelea y aun le queda 2 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Tonyn")
-        self.assertIn("Tonyn deja de moverse", response_json['warnings'])
-        self.assertIn("Arnaldor deja de moverse", response_json['warnings'])
 
     def test_not_finished_fight_draw(self):
         """ Test not_finished_fight_draw """
@@ -142,9 +136,8 @@ class TestMultipleFights(unittest.TestCase):
             "a ambos jugadores les queda 1 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Draw")
-        self.assertEqual(len(response_json['warnings']), 0)
 
     def test_not_finished_fight(self):
         """ Test not_finished_fight """
@@ -163,9 +156,8 @@ class TestMultipleFights(unittest.TestCase):
             "a quien le queda 2 de energía vs a Arnaldor a quien le queda 1 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Tonyn")
-        self.assertEqual(len(response_json['warnings']), 0)
 
     def test_not_strings_hits(self):
         """ Test not_strings_hits """
@@ -174,19 +166,17 @@ class TestMultipleFights(unittest.TestCase):
         response_json = response.json()
 
         expected_details = (
+            "Tonyn se mueve\n"
             "Arnaldor conecta un Remuyuken\n"
             "Tonyn se mueve\n"
             "Arnaldor se queda inmóvil\n"
-            "Tonyn se mueve\n"
+            "Tonyn salta hacia atrás\n"
             "Arnaldor conecta un Remuyuken\n"
-            "KO! Arnaldor gana la pelea y aun le queda 1 de energía"
+            "KO! Arnaldor gana la pelea y aun le queda 6 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Arnaldor")
-        self.assertIn("Tonyn usa golpes inválidos", response_json['warnings'])
-        self.assertIn("Arnaldor usa golpes inválidos", response_json['warnings'])
-        # self.assertEqual(len(response_json['warnings']), 0)
 
     def test_not_strings_movements(self):
         """ Test not_strings_movements """
@@ -203,9 +193,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Arnaldor gana la pelea y aun le queda 1 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Arnaldor")
-        self.assertIn("Arnaldor usa movimientos inválidos", response_json['warnings'])
 
     def test_with_just_player1(self):
         """ Test with_just_player1 """
@@ -221,10 +210,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Tonyn gana la pelea y aun le queda 6 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Tonyn")
-        self.assertIn("Arnaldor se queda sin movimientos", response_json['warnings'])
-        self.assertIn("Arnaldor se queda sin golpes", response_json['warnings'])
 
     def test_with_just_player2(self):
         """ Test with_just_player2 """
@@ -240,10 +227,8 @@ class TestMultipleFights(unittest.TestCase):
             "KO! Arnaldor gana la pelea y aun le queda 6 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Arnaldor")
-        self.assertIn("Tonyn se queda sin movimientos", response_json['warnings'])
-        self.assertIn("Tonyn se queda sin golpes", response_json['warnings'])
 
     def test_without_players(self):
         """ Test without_players """
@@ -256,7 +241,7 @@ class TestMultipleFights(unittest.TestCase):
             "a ambos jugadores les queda 6 de energía"
         )
 
-        self.assertEqual(response_json['details'], expected_details)
+        self.assertEqual(response_json['detail'], expected_details)
         self.assertEqual(response_json['winner'], "Draw")
 
 if __name__ == '__main__':

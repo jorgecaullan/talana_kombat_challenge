@@ -5,40 +5,33 @@ from fastapi import FastAPI, HTTPException
 from models import MoveRequest, MoveResponse
 from talana_kombat import TalanaKombat
 
-logging.basicConfig(level=logging.INFO)
-
 app = FastAPI()
 
 @app.post("/start", response_model=MoveResponse, tags=["Talana Kombat by Jorge Caullán"])
-def start_fight(move_request: MoveRequest) -> MoveResponse:
-    """ Start a fight with a json file,
-        return fight details, winner and warnings (in case they exist) """
+def start_fight(move_request: MoveRequest | dict) -> MoveResponse:
+    """ Start a fight with a json file, return fight details and winner """
 
-    game = TalanaKombat()
     try:
-        # # upcase inputs and remove characters different than WASD
-        # movement_inputs = re.sub(r'[^WASD]', '', movement_inputs.upper())
-        input_dict = move_request.model_dump()
-        player1 = input_dict["player1"]
-        p1_movements = player1["movimientos"]
-        logging.info('p1_movements')
-        logging.info(p1_movements)
-        p1_hits = player1["golpes"]
-        logging.info('p1_hits')
-        logging.info(p1_hits)
+        # dict is accepted only to make more flexible
+        input_dict = move_request
+        # if its a MoveRequest, get a dict input
+        if not isinstance(move_request, dict):
+            input_dict = move_request.model_dump()
+        game = TalanaKombat(input_dict)
 
-        player2 = input_dict["player2"]
-        p2_movements = player2["movimientos"]
-        logging.info('p2_movements')
-        logging.info(p2_movements)
-        p2_hits = player2["golpes"]
-        logging.info('p2_hits')
-        logging.info(p2_hits)
+        is_ended = False
+        length = len(game.full_json["player1"]["movimientos"])
+        for i in range(length):
+            is_ended = game.play_turn(i)
+            if is_ended:
+                break
+
+        if not is_ended:
+            game.end_game(False)
 
         return MoveResponse(
-            details=game.full_description,
-            winner='You win',
-            warnings=[],
+            detail=game.full_description,
+            winner=game.winner,
         )
     except Exception as e:
         logging.error("Error processing request: %s", e)

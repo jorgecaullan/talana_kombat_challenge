@@ -6,7 +6,7 @@ class TestMovementInputs(unittest.TestCase):
     """ Class that tests players movements """
 
     def setUp(self):
-        self.game = TalanaKombat()
+        self.game = TalanaKombat({})
 
     def test_player_1_movements(self):
         """ Test player 1 movements previous to use a hit """
@@ -135,49 +135,72 @@ class TestMovementInputs(unittest.TestCase):
     def test_turn_description(self):
         """ Test different turns full descriptions """
         # only movements
-        self.assertEqual(self.game.get_turn_description("Tonyn", "AAA", ""),
+        self.assertEqual(self.game.get_turn_description("player1", "AAA", ""),
                          "Tonyn retrocede\n")
-        self.assertEqual(self.game.get_turn_description("Tonyn", "ASDAS", ""),
+        self.assertEqual(self.game.get_turn_description("player1", "ASDAS", ""),
                          "Tonyn se mueve\n")
 
         # only hits
-        self.assertEqual(self.game.get_turn_description("Tonyn", "", "K"),
+        self.assertEqual(self.game.get_turn_description("player1", "", "K"),
                          "Tonyn da una patada\n")
-        self.assertEqual(self.game.get_turn_description("Tonyn", "DSD", "P"),
+        self.assertEqual(self.game.get_turn_description("player1", "DSD", "P"),
                          "Tonyn conecta un Taladoken\n")
 
         # movements with hits
-        self.assertEqual(self.game.get_turn_description("Tonyn", "DD", "P"),
+        self.assertEqual(self.game.get_turn_description("player1", "DD", "P"),
                          "Tonyn avanza y da un puñetazo\n")
-        self.assertEqual(self.game.get_turn_description("Tonyn", "WDDSD", "P"),
+        self.assertEqual(self.game.get_turn_description("player1", "WDDSD", "P"),
                          "Tonyn salta hacia adelante y conecta un Taladoken\n")
 
         # no movements and no hits
-        self.assertEqual(self.game.get_turn_description("Tonyn", "", ""),
+        self.assertEqual(self.game.get_turn_description("player1", "", ""),
                          "Tonyn se queda inmóvil\n")
 
     def test_set_first_player(self):
         """ Test who player should start """
+        base_json = {
+            "player1": { "movimientos": ["ASD"], "golpes": ["P"] },
+            "player2": { "movimientos": ["ASD"], "golpes": ["P"] }
+        }
 
         # p1 same buttons and hits
-        self.assertEqual(self.game.set_first_player("ASD", "P", "ASD", "P"),
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player1")
+
         # p1 less buttons
-        self.assertEqual(self.game.set_first_player("AS", "P", "ASD", "K"),
+        base_json["player1"]["movimientos"] = ["AS"]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player1")
-        self.assertEqual(self.game.set_first_player("ASD", "", "ASD", "P"),
+        base_json["player1"]["movimientos"] = ["ASD"]
+        base_json["player1"]["golpes"] = [""]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player1")
+
         # p1 same buttons, but less hits
-        self.assertEqual(self.game.set_first_player("AS", "", "A", "K"),
+        base_json["player1"]["movimientos"] = ["AS"]
+        base_json["player1"]["golpes"] = [""]
+        base_json["player2"]["movimientos"] = ["A"]
+        base_json["player2"]["golpes"] = ["K"]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player1")
 
         # p2 less buttons
-        self.assertEqual(self.game.set_first_player("ASD", "P", "AS", "P"),
+        base_json["player1"]["movimientos"] = ["ASD"]
+        base_json["player1"]["golpes"] = ["P"]
+        base_json["player2"]["movimientos"] = ["AS"]
+        base_json["player2"]["golpes"] = ["P"]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player2")
-        self.assertEqual(self.game.set_first_player("ASD", "P", "ASD", ""),
+        base_json["player2"]["movimientos"] = ["ASD"]
+        base_json["player2"]["golpes"] = [""]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player2")
+
         # p2 same buttons, but less hits
-        self.assertEqual(self.game.set_first_player("A", "P", "AP", ""),
+        base_json["player1"]["movimientos"] = ["A"]
+        base_json["player1"]["golpes"] = ["P"]
+        base_json["player2"]["movimientos"] = ["AS"]
+        self.assertEqual(TalanaKombat(base_json).set_first_player(),
                          "player2")
 
 
